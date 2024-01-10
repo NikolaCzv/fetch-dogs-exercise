@@ -35,6 +35,19 @@ const PaginationWrapper = styled.div`
     padding: 2rem;
 `;
 
+const SelectWrapper = styled.div`
+    width: -webkit-fill-available;
+
+    display: flex;
+    justify-content: space-between;
+    align-itmes: center;
+    margin: 2rem 0;
+`;
+
+const SortWrapper = styled.div`
+    cursor: pointer;
+`;
+
 const TopWrapper = styled.div`
     width: -webkit-fill-available;
 
@@ -43,4 +56,4 @@ const TopWrapper = styled.div`
     align-itmes: center;
 `;
 
-export { CardsWrapper, HomeContainer, Logo, NoResultMsessage, PaginationWrapper, TopWrapper };
+export { CardsWrapper, HomeContainer, Logo, NoResultMsessage, PaginationWrapper, SelectWrapper, SortWrapper, TopWrapper };

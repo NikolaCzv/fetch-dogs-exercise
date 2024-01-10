@@ -2,25 +2,37 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '../../components/Button';
-import { CardsWrapper, HomeContainer, Logo, NoResultMsessage, PaginationWrapper, TopWrapper } from './Home.style';
+import { 
+    CardsWrapper, 
+    HomeContainer, 
+    Logo, 
+    NoResultMsessage, 
+    PaginationWrapper, 
+    SelectWrapper, 
+    SortWrapper, 
+    TopWrapper 
+} from './Home.style';
 import logo from '../../assets/images/logo.png';
 import DogCard from '../../components/DogCard';
-import { getDogsByID, sortDogsAscending, sortDogsDescending } from '../../utils/helpersFunctions';
+import { getDogsByID } from '../../utils/helpersFunctions';
 
 import { CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons'
 import { Select } from 'antd';
+import FavoritesModal from '../../components/FavoritesModal';
+import Loader from '../../components/Loader';
 
 const Home = () => {
     const navigate = useNavigate();
 
     const [breeds, setBreeds] = useState<String[] | { value: String, label: String }[]>([]);
+    const [favoriteDogs, setFavoriteDogs] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [isSorted, setIsSorted] = useState<boolean>(true);
     const [nextLink, setNextLink] = useState<string | undefined>("");
     const [prevLink, setPrevLink] = useState<string | undefined>("");
     const [selectedDogs, setSelectedDogs] = useState<any[]>([]);
     const [searchParams, setSearchParams] = useState<any[]>([]);
-    const [totalNumber, setTotalNumber] = useState<number>(0);
 
     useEffect(() => {
         let config = {
@@ -64,11 +76,9 @@ const Home = () => {
             let params = { breeds: value };
             setSearchParams([...value]);
 
-            let response = axios.get(`${process.env.REACT_APP_FETCH_API}/dogs/search`, { withCredentials: true, params: params });
+            let response = axios.get(`${process.env.REACT_APP_FETCH_API}/dogs/search?sort=breed:asc`, { withCredentials: true, params: params });
             response.then(resp => {
                 let dogIds = resp.data.resultIds;
-                console.log("resp.data.total", resp.data.total)
-                setTotalNumber(resp.data.total);
 
                 if(resp.data.next){
                     setNextLink(resp.data.next);
@@ -77,8 +87,8 @@ const Home = () => {
                 let response = getDogsByID(dogIds);
                   
                 response.then(resp => {
-                    let sortedDogs = sortDogsAscending(resp.data);
-                    setSelectedDogs(sortedDogs);
+                    setSelectedDogs(resp.data);
+                    setIsSorted(true);
                     setIsLoading(false);
                 });
             })
@@ -107,9 +117,7 @@ const Home = () => {
                 let response = getDogsByID(dogIds);
                   
                 response.then(resp => {
-                    let sortedDogs = sortDogsAscending(resp.data);
-    
-                    setSelectedDogs(sortedDogs);
+                    setSelectedDogs(resp.data);
                     setIsLoading(false);
                     window.scrollTo(0, 0);
                 });
@@ -120,94 +128,93 @@ const Home = () => {
     };
 
     const toggleSort = (type: string) => {
-        console.log("type", type)
-        if(type === 'asc'){
-            let localBreeds = sortDogsAscending(selectedDogs);
-            console.log("localBreeds 1111", localBreeds)
-            setSelectedDogs(localBreeds);
-        } else if(type === 'desc'){
-            let nextArray = nextLink?.split('=');
-            nextArray?.pop();
-            // let url = nextArray?.push(`${totalNumber}`);
-            // console.log("url", url)
-            //@ts-ignore
-            console.log("nextArray", nextArray?.join('=') + '=' + `${totalNumber - 25}`);
-            //@ts-ignore
-            let response = axios.get(`${process.env.REACT_APP_FETCH_API}${nextArray?.join('=') + '=' + `${totalNumber - 25}`}`, { withCredentials: true, params: { breeds: searchParams } });
+        try {
+            let response = axios.get(`${process.env.REACT_APP_FETCH_API}/dogs/search?sort=breed:${type}`, { withCredentials: true, params: searchParams });
             response.then(resp => {
                 let dogIds = resp.data.resultIds;
-                if(resp.data.prev){
-                    setNextLink(resp.data.prev);
-                }
 
-                let prevArray = resp.data?.prev?.split('=');
-                let prevNumber = +prevArray[prevArray.length - 1];
-
-                if(resp.data.total > prevNumber){
-                    setNextLink(resp.data.prev);
-                } else {
-                    setNextLink(undefined);
+                if(resp.data.next){
+                    setNextLink(resp.data.next);
                 }
-                setPrevLink(resp.data.next);
                 
-                let response = getDogsByID(dogIds.reverse())
+                let response = getDogsByID(dogIds);
                   
                 response.then(resp => {
-                    let sortedDogs = sortDogsAscending(resp.data);
-                    console.log("resp.data", resp.data)
-                    setSelectedDogs(sortedDogs);
+                    setSelectedDogs(resp.data);
+                    setIsSorted(!isSorted);
                     setIsLoading(false);
                 });
             })
+        } catch (error) {
+            console.log(error)
         }
     };
 
-    console.log("setTotalNumber", totalNumber, nextLink);
+    const addToFavorites = (dogId: any[]) => setFavoriteDogs([...favoriteDogs, dogId]);
 
-    //SORT UP AN DOWN
-    //ADD TO FAVORITES
-    //FIND A FAV MATCH
+    const removeFavorite = (dogId: string) => {
+        let filtered = favoriteDogs.filter(favDog => favDog !== dogId);
+
+        setFavoriteDogs(filtered);
+    }
+
+    const toggleFavModal = () => setIsModalOpen(!isModalOpen);
+
     //RESPONSIVE
     //CLEANUP
+    //FIX //@ts-ignore
     //COMMENTS
+    //READ ME
 
     return (
         <HomeContainer>
+            <FavoritesModal 
+                favorites={favoriteDogs} 
+                isOpen={isModalOpen} 
+                onClose={toggleFavModal}
+            />
             <TopWrapper>
                 <Logo alt="" src={logo}/>
-                <Button title='LOGOUT' color='primary' onClick={handleLogout}/>
+                <Button title='LOGOUT' color='secondary' onClick={handleLogout}/>
             </TopWrapper>
-            <div>
-                Search by Breed
-                <Select
-                    showSearch
-                    mode="multiple"
-                    placeholder="Select Breed"
-                    optionFilterProp="children"
-                    onChange={onChangeSelect}
-                    // onSearch={onSearch}
-                    filterOption={filterOption}
-                    // @ts-ignore
-                    options={breeds}
-                    style={{ width: '15rem', margin: '1rem' }}
+            <SelectWrapper>
+                <div>
+                    Search by Breed
+                    <Select
+                        showSearch
+                        mode="multiple"
+                        placeholder="Select Breed"
+                        optionFilterProp="children"
+                        onChange={onChangeSelect}
+                        filterOption={filterOption}
+                        // @ts-ignore
+                        options={breeds}
+                        style={{ width: '15rem', margin: '1rem' }}
+                    />
+                </div>
+                <Button
+                    title='FIND A MATCH'
+                    onClick={toggleFavModal}
+                    color='primary'
+                    isDisabled={favoriteDogs.length === 0}
                 />
-            </div>
-            {isSorted && 
-                <div onClick={() => toggleSort('desc')}>
-                    Sort Breeds Z - A
-                    <CaretUpOutlined />
-                </div>
-            }
-            {!isSorted &&
-                <div onClick={() => toggleSort('asc')}>
-                    Sort Breeds A - Z
-                    <CaretDownOutlined />
-                </div>
-            }
+            </SelectWrapper>
             {isLoading ?
-                <h1>...loading</h1>
+                <Loader />
                 :
             <>
+                {isSorted && selectedDogs.length !== 0 &&
+                    <SortWrapper onClick={() => toggleSort('desc')}>
+                        Sort Breeds Z - A
+                        <CaretUpOutlined />
+                    </SortWrapper>
+                }
+                {!isSorted && selectedDogs.length !== 0 &&
+                    <SortWrapper onClick={() => toggleSort('asc')}>
+                        Sort Breeds A - Z
+                        <CaretDownOutlined />
+                    </SortWrapper>
+                }
                 {selectedDogs.length === 0 &&
                     <NoResultMsessage>
                         Sorry no dogs were found. Please select filters above.
@@ -216,8 +223,13 @@ const Home = () => {
                 <CardsWrapper>
                     {selectedDogs.map((dog, index) => (
                         <DogCard 
-                            dog={dog} 
                             key={index}
+                            dog={dog} 
+                            //@ts-ignore
+                            addToFavorites={addToFavorites}
+                            favoriteDogs={favoriteDogs}
+                            //@ts-ignore
+                            removeFavorite={removeFavorite}
                         />
                     ))}
                 </CardsWrapper>

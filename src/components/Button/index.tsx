@@ -1,9 +1,14 @@
 import { ButtonContainer } from './Button.style';
 import { ButtonProps } from './Button.types';
 
-const Button = ({ title, onClick, color }: ButtonProps) => {
+const Button = ({ title, onClick, color, isDisabled }: ButtonProps) => {
     return (
-        <ButtonContainer onClick={onClick} color={color}>{title}</ButtonContainer>
+        <ButtonContainer 
+            $color={color} 
+            $isDisabled={isDisabled} 
+            onClick={onClick} 
+            disabled={isDisabled}
+        >{title}</ButtonContainer>
     )
 };
 

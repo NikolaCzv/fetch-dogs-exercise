@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { colors } from '../../utils/colors';
 
-const CardContainer = styled.div`
+const CardContainer = styled.div<{ $isMatch: boolean | undefined }>`
     height: 30rem;
     width: 20rem;
     display: flex;
@@ -13,7 +13,7 @@ const CardContainer = styled.div`
     border: solid;
     border-width: 1px;
     border-radius: 0.5rem;
-    box-shadow: 5px 5px ${colors.orange}, 10px 10px ${colors.purple};
+    box-shadow: ${(props) => !props.$isMatch && `5px 5px ${colors.orange}, 10px 10px ${colors.purple}`};
 `;
 
 const CardImg = styled.img`
