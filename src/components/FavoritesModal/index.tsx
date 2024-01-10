@@ -1,12 +1,14 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { getDogsByID } from "../../utils/helpersFunctions";
+import { useDeviceDimensions } from "../../utils/useDeviceDimensions";
 import DogCard from "../DogCard";
 import Loader from "../Loader";
 import { CustomModal } from "./FavoritesModal.style";
 import { FavoritesModalProps } from './FavoritesModal.types';
 
 const FavoritesModal = ({ favorites, isOpen, onClose }: FavoritesModalProps) => {
+    const { isTabletOrSmaller } = useDeviceDimensions();
 
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [match, setMatch] = useState<any>({});
@@ -27,7 +29,13 @@ const FavoritesModal = ({ favorites, isOpen, onClose }: FavoritesModalProps) => 
     },[favorites, isOpen]);
     
     return (
-        <CustomModal title="We Found Your a Match!" open={isOpen} footer={null} onCancel={onClose}>
+        <CustomModal 
+            title="We Found Your a Match!" 
+            open={isOpen} 
+            footer={null} 
+            onCancel={onClose} 
+            $isTabletOrSmaller={isTabletOrSmaller}
+        >
             {isLoading ?
                 <Loader />
                 :

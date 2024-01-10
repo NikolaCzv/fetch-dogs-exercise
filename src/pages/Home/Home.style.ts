@@ -21,9 +21,11 @@ const Logo = styled.img`
 `;
 
 const NoResultMsessage = styled.div`
-    position: absolute;
-    top: 50%;
-    width: 25rem;
+    width: -webkit-fill-available;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    margin: 1rem 0;
 `;
 
 const PaginationWrapper = styled.div`
@@ -35,12 +37,12 @@ const PaginationWrapper = styled.div`
     padding: 2rem;
 `;
 
-const SelectWrapper = styled.div`
+const SelectWrapper = styled.div<{$isTabletOrSmaller: boolean}>`
     width: -webkit-fill-available;
 
     display: flex;
+    flex-direction: ${({$isTabletOrSmaller}) => $isTabletOrSmaller ? 'column' : 'row'};
     justify-content: space-between;
-    align-itmes: center;
     margin: 2rem 0;
 `;
 

@@ -11,7 +11,6 @@ const App = () => {
   useEffect(() => {
     const localAuth = window.localStorage.getItem('isAuth');
     if(localAuth){
-      console.log("localAuth", localAuth)
       setIsAuth(true);
     }
     if(localAuth === null || typeof localAuth === 'undefined'){

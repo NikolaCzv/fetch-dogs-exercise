@@ -20,9 +20,11 @@ import { CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons'
 import { Select } from 'antd';
 import FavoritesModal from '../../components/FavoritesModal';
 import Loader from '../../components/Loader';
+import { useDeviceDimensions } from '../../utils/useDeviceDimensions';
 
 const Home = () => {
     const navigate = useNavigate();
+    let { isTabletOrSmaller } = useDeviceDimensions();
 
     const [breeds, setBreeds] = useState<String[] | { value: String, label: String }[]>([]);
     const [favoriteDogs, setFavoriteDogs] = useState<any[]>([]);
@@ -33,6 +35,7 @@ const Home = () => {
     const [prevLink, setPrevLink] = useState<string | undefined>("");
     const [selectedDogs, setSelectedDogs] = useState<any[]>([]);
     const [searchParams, setSearchParams] = useState<any[]>([]);
+    const [sortType, setSortType] = useState<string>('asc');
 
     useEffect(() => {
         let config = {
@@ -58,7 +61,7 @@ const Home = () => {
                     localStorage.clear();
                     navigate('/login');
                 })
-                .catch((error) => console.log('222', error));
+                .catch((error) => console.log('error', error));
     };
 
     // Filter `option.label` match the user type `input`
@@ -76,7 +79,8 @@ const Home = () => {
             let params = { breeds: value };
             setSearchParams([...value]);
 
-            let response = axios.get(`${process.env.REACT_APP_FETCH_API}/dogs/search?sort=breed:asc`, { withCredentials: true, params: params });
+            let response = axios
+                .get(`${process.env.REACT_APP_FETCH_API}/dogs/search?sort=breed:${sortType}`, { withCredentials: true, params: params });
             response.then(resp => {
                 let dogIds = resp.data.resultIds;
 
@@ -128,14 +132,17 @@ const Home = () => {
     };
 
     const toggleSort = (type: string) => {
+        setSortType(type);
         try {
-            let response = axios.get(`${process.env.REACT_APP_FETCH_API}/dogs/search?sort=breed:${type}`, { withCredentials: true, params: searchParams });
+            let response = axios.get(`${process.env.REACT_APP_FETCH_API}/dogs/search?sort=breed:${type}`, { withCredentials: true, params: {breeds: searchParams} });
             response.then(resp => {
                 let dogIds = resp.data.resultIds;
 
                 if(resp.data.next){
                     setNextLink(resp.data.next);
                 }
+
+                console.log("dogIds", dogIds);
                 
                 let response = getDogsByID(dogIds);
                   
@@ -154,17 +161,10 @@ const Home = () => {
 
     const removeFavorite = (dogId: string) => {
         let filtered = favoriteDogs.filter(favDog => favDog !== dogId);
-
         setFavoriteDogs(filtered);
-    }
+    };
 
     const toggleFavModal = () => setIsModalOpen(!isModalOpen);
-
-    //RESPONSIVE
-    //CLEANUP
-    //FIX //@ts-ignore
-    //COMMENTS
-    //READ ME
 
     return (
         <HomeContainer>
@@ -177,7 +177,7 @@ const Home = () => {
                 <Logo alt="" src={logo}/>
                 <Button title='LOGOUT' color='secondary' onClick={handleLogout}/>
             </TopWrapper>
-            <SelectWrapper>
+            <SelectWrapper $isTabletOrSmaller={isTabletOrSmaller}>
                 <div>
                     Search by Breed
                     <Select
@@ -189,7 +189,7 @@ const Home = () => {
                         filterOption={filterOption}
                         // @ts-ignore
                         options={breeds}
-                        style={{ width: '15rem', margin: '1rem' }}
+                        style={{ width: '15rem', margin: '1rem'}}
                     />
                 </div>
                 <Button

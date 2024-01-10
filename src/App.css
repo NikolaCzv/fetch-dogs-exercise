@@ -3,3 +3,9 @@ html, body {
     margin: 0;
     font-family: 'Gill Sans', sans-serif;
 }
+
+.ant-modal-body{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

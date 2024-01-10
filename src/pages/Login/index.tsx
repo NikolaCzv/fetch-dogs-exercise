@@ -25,19 +25,17 @@ const Login = () => {
             axios
                 .post(`${process.env.REACT_APP_FETCH_API}/auth/login`, userData, { withCredentials: true })
                 .then((resp) => {
-                    console.log(resp)
                     window.localStorage.setItem('isAuth', email);
 
                     let response = axios.get('https://frontend-take-home-service.fetch.com/dogs/breeds', {
                         withCredentials: true,
                     });
                     response.then(data => console.log("data", data))
-                    console.log("response", response);
                     navigate('/');
                 })
-                .catch((error) => console.log('222', error));
+                .catch((error) => console.log('error', error));
         } catch (error) {
-            console.log('errorerrorerror', error);
+            console.log('error', error);
         }
     };
 
