@@ -14,6 +14,7 @@ const FavoritesModal = ({ favorites, isOpen, onClose }: FavoritesModalProps) => 
     const [match, setMatch] = useState<any>({});
 
     useEffect(() => {
+        //here we get the match from the api
         if(isOpen){
             setIsLoading(true);
             axios

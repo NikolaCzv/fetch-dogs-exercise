@@ -8,7 +8,9 @@ const Button = ({ title, onClick, color, isDisabled }: ButtonProps) => {
             $isDisabled={isDisabled} 
             onClick={onClick} 
             disabled={isDisabled}
-        >{title}</ButtonContainer>
+        >
+            {title}
+        </ButtonContainer>
     )
 };
 

@@ -26,11 +26,6 @@ const Login = () => {
                 .post(`${process.env.REACT_APP_FETCH_API}/auth/login`, userData, { withCredentials: true })
                 .then((resp) => {
                     window.localStorage.setItem('isAuth', email);
-
-                    let response = axios.get('https://frontend-take-home-service.fetch.com/dogs/breeds', {
-                        withCredentials: true,
-                    });
-                    response.then(data => console.log("data", data))
                     navigate('/');
                 })
                 .catch((error) => console.log('error', error));

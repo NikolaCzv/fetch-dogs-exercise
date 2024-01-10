@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import { createContext, useContext, useEffect, useState } from 'react';
 
+//DeviceDimensionsProvider is made to prived the devloper with the screen sizes at anytime
 const initialState = {
 	windowWidth: 1920,
 	isDesktop: true,

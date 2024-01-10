@@ -50,6 +50,7 @@ const Home = () => {
         })
     },[]);
 
+
     const handleLogout = () => {
         axios.post(`${process.env.REACT_APP_FETCH_API}/auth/logout`, {
                     name: 'test',
@@ -68,6 +69,8 @@ const Home = () => {
     const filterOption = (input: string, option?: { label: string; value: string }) =>
         (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
 
+    
+    //getting dog by breeds when user select
     const onChangeSelect = (value: string[]) => {
         setIsLoading(true);
         if(value.length === 0){
@@ -131,6 +134,7 @@ const Home = () => {
         }
     };
 
+    //sorting dog breeds ascending & descending
     const toggleSort = (type: string) => {
         setSortType(type);
         try {
@@ -157,8 +161,10 @@ const Home = () => {
         }
     };
 
+    //saving dog ids to favorites array
     const addToFavorites = (dogId: any[]) => setFavoriteDogs([...favoriteDogs, dogId]);
 
+    //remmoving dog ids from favorites array
     const removeFavorite = (dogId: string) => {
         let filtered = favoriteDogs.filter(favDog => favDog !== dogId);
         setFavoriteDogs(filtered);
