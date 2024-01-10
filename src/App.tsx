@@ -19,10 +19,12 @@ const App = () => {
     
   },[]);
 
+  console.log("isAuth", isAuth)
+
   return (
     <Routes>
       {/**@ts-ignore */}
-      <Route path='/' render={<ProtectedRoute isAuth={isAuth} />}>
+      <Route path='/' element={<ProtectedRoute isAuth={isAuth} />}>
         <Route path='/' element={<Home />}/> 
       </Route>
       <Route path='/login' element={<Login />}/>

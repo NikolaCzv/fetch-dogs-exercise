@@ -2,6 +2,7 @@ import { ProtectedRouteProps } from './ProtectedRoute.types';
 import {  Navigate, Outlet } from 'react-router-dom';
 
 const ProtectedRoute = ({ isAuth }: ProtectedRouteProps) => {
+    console.log("isAuth2222", isAuth);
     if (!isAuth) {
         return <Navigate to="/login" replace />;
     }
