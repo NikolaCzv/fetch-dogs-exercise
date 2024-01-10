@@ -1,25 +1,33 @@
-import React from 'react';
-import logo from './logo.svg';
+import { Route, Routes } from 'react-router-dom';
+import Login from './pages/Login';
+import Home from './pages/Home';
+import ProtectedRoute from './components/ProtectedRoute';
+import { useEffect, useState } from 'react';
 import './App.css';
 
-function App() {
+const App = () => {
+  const [isAuth, setIsAuth] = useState(false);
+
+  useEffect(() => {
+    const localAuth = window.localStorage.getItem('isAuth');
+    if(localAuth){
+      console.log("localAuth", localAuth)
+      setIsAuth(true);
+    }
+    if(localAuth === null || typeof localAuth === 'undefined'){
+      setIsAuth(false);
+    }
+    
+  },[]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Routes>
+      {/**@ts-ignore */}
+      <Route path='/' render={<ProtectedRoute isAuth={isAuth} />}>
+        <Route path='/' element={<Home />}/> 
+      </Route>
+      <Route path='/login' element={<Login />}/>
+    </Routes>
   );
 }
 
